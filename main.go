@@ -135,7 +135,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	e.mutex.Lock() // To protect metrics from concurrent collects.
 	defer e.mutex.Unlock()
 
-	resp, err := e.client.Get(fmt.Sprintf("http://%s/cgi-bin/status", *modemAddress))
+	resp, err := e.client.Get(fmt.Sprintf("http://%s/RgConnect.asp", *modemAddress))
 	if err != nil {
 		ch <- prometheus.MustNewConstMetric(e.up, prometheus.GaugeValue, 0)
 		log.Errorf("Failed to collect stats from surfboard: %s", err)
@@ -205,11 +205,11 @@ L:
 					switch {
 					case column == 4:
 						// Frequency
-						r, _ := regexp.Compile(`(\d+\.\d+)`)
+						r, _ := regexp.Compile(`(\d+)`)
 						s := r.FindString(value)
 						v, _ := strconv.ParseFloat(s, 64)
 						i := strconv.Itoa(id)
-						ch <- prometheus.MustNewConstMetric(e.downFrequency, prometheus.GaugeValue, v*1000000, i)
+						ch <- prometheus.MustNewConstMetric(e.downFrequency, prometheus.GaugeValue, v, i)
 					case column == 5:
 						// Power
 						r, _ := regexp.Compile(`(\d+\.\d+)`)
@@ -244,11 +244,11 @@ L:
 					switch {
 					case column == 5:
 						// Frequency
-						r, _ := regexp.Compile(`(\d+\.\d+)`)
+						r, _ := regexp.Compile(`(\d+)`)
 						s := r.FindString(value)
 						v, _ := strconv.ParseFloat(s, 64)
 						i := strconv.Itoa(id)
-						ch <- prometheus.MustNewConstMetric(e.upFrequency, prometheus.GaugeValue, v*1000000, i)
+						ch <- prometheus.MustNewConstMetric(e.upFrequency, prometheus.GaugeValue, v, i)
 					case column == 6:
 						// Power
 						r, _ := regexp.Compile(`(\d+\.\d+)`)
